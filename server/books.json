@@ -1,5 +1,19 @@
 {
     "books": [
-        
+        {
+            "title": "test1",
+            "author": "lol",
+            "id": 1
+        },
+        {
+            "id": 2,
+            "author": "god",
+            "title": "the master baiters"
+        },
+        {
+            "id": 3,
+            "author": "god",
+            "title": "fluoride drinkers"
+        }
     ]
 }

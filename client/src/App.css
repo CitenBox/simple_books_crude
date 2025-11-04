@@ -1,42 +1,339 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
+/* Main container - centered layout */
+.app-container {
+  max-width: 900px;
   padding: 2rem;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Header */
+.app-header {
+  margin-bottom: 2rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.app-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #646cff;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
+.tagline {
   color: #888;
+  font-size: 1rem;
+  margin: 0;
+  font-style: italic;
 }
+
+/* Statistics Dashboard */
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, rgba(100, 108, 255, 0.1) 0%, rgba(100, 108, 255, 0.05) 100%);
+  border: 1px solid rgba(100, 108, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(100, 108, 255, 0.2);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #646cff;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Section styling */
+.form-section,
+.list-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-section h2,
+.list-section h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  color: inherit; /* adapt to theme (dark/light) */
+}
+
+.section-description {
+  color: #999;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+/* Book Form styling */
+.form-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.form-section input {
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  font-size: 1rem;
+  min-width: 150px;
+}
+
+.form-section input:focus {
+  outline: none;
+  border-color: #646cff;
+}
+
+.form-section button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  border: none;
+  background: #646cff;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.form-section button:hover {
+  background: #535bf2;
+}
+
+/* Book List styling */
+.book-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.no-books {
+  color: #888;
+  font-style: italic;
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+}
+
+.empty-hint {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Author group styling */
+.author-group {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.author-header {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(100, 108, 255, 0.1);
+  border: none;
+  color: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.author-header:hover {
+  background: rgba(100, 108, 255, 0.15);
+}
+
+.expand-icon {
+  font-size: 0.8rem;
+  color: #646cff;
+  min-width: 1rem;
+}
+
+.author-name {
+  font-weight: 600;
+  flex: 1;
+}
+
+.book-count {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* Books sublist */
+.books-sublist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.book-item {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  transition: background 0.2s;
+}
+
+.book-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.book-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.book-number {
+  background: rgba(100, 108, 255, 0.2);
+  color: #646cff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  min-width: 2rem;
+  text-align: center;
+  margin-right: 0.5rem; /* Ensure space between number and title */
+}
+
+.book-info-detailed {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.book-title {
+  flex: 1;
+  text-align: left;
+  font-weight: 700; /* Stronger bold */
+  font-size: 1.25rem; /* Make title visibly larger */
+  color: inherit; /* Use theme text color so it's not white-on-white in light mode */
+}
+
+/* Emoji alignment for section headings */
+.emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5rem;
+  line-height: 1;
+}
+
+.book-id {
+  font-size: 0.75rem;
+  color: #666;
+  font-family: monospace;
+}
+
+.delete-btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .app-container {
+    padding: 1rem;
+  }
+
+  .app-header h1 {
+    font-size: 2rem;
+  }
+
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+
+  .form-section ul {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-section input,
+  .form-section button {
+    width: 100%;
+  }
+
+  .book-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .book-details {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .delete-btn {
+    width: 100%;
+  }
+}
+

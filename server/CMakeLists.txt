@@ -38,5 +38,6 @@ target_link_libraries(BooksApi PRIVATE
   Crow::Crow
 )
 
+#change the directory to where you want the books json to be stored.
 target_compile_definitions(BooksApi PUBLIC BOOKS_DIR="${CMAKE_SOURCE_DIR}/")
 

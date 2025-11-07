@@ -66,6 +66,11 @@ int main()
 
   idBooks();
 
+  CROW_ROUTE(app, "/health")
+  ([]{
+    return crow::response(200,"ok");
+  });
+
   CROW_ROUTE(app, "/books")
   .methods(crow::HTTPMethod::POST)
   ([](const crow::request& req){

@@ -4,7 +4,17 @@ import BookForm from './components/BookForm';
 import BookList from './components/BookList';
 import './App.css';
 
-const apiUrl = 'http://localhost:3001/books';
+// Build API URL from environment variables
+const API_PROTOCOL = import.meta.env.VITE_API_PROTOCOL || 'http';
+const API_HOST = import.meta.env.VITE_API_HOST || 'localhost';
+const API_PORT = import.meta.env.VITE_API_PORT || '3001';
+const API_BASE_PATH = import.meta.env.VITE_API_BASE_PATH || '/books';
+const portStr = API_PORT && API_PORT !== '80' && API_PORT !== '443' ? `:${API_PORT}` : '';
+const apiUrl = `${API_PROTOCOL}://${API_HOST}${portStr}${API_BASE_PATH}`;
+
+// App configuration
+const APP_TITLE = import.meta.env.VITE_APP_TITLE || 'Book Manager';
+const APP_TAGLINE = import.meta.env.VITE_APP_TAGLINE || 'Organize and track your personal book collection';
 
 export default function App() {
   const [books, setBooks] = useState([]);
@@ -47,8 +57,8 @@ export default function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>📚 Book Manager</h1>
-        <p className="tagline">Organize and track your personal book collection</p>
+        <h1>📚 {APP_TITLE}</h1>
+        <p className="tagline">{APP_TAGLINE}</p>
       </header>
 
       {/* Statistics Dashboard */}

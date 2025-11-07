@@ -1,0 +1,20 @@
+services:
+  api:
+    build: ./server
+    # use image for production (or both lol)
+    ports: ["3001:3001"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "localhost:3001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+  web:
+    build: ./client
+    #use image for production
+    environment:
+      - VITE_API_URL=http://localhost:3001
+    ports: ["5173:5173"]
+    depends_on:
+      api:
+        condition: service_healthy

@@ -17,7 +17,7 @@ Docker compositions for development and production. GitHub CI builds and pushes 
 **Production** (nginx + optimized builds):
 ```bash
 ./upprod.sh
-# everything on http://localhost:8080
+http://localhost:8080
 ```
 
 **Manual backend** (if you want):
@@ -34,6 +34,7 @@ cd client
 npm install
 npm run dev
 ```
+
 
 
 

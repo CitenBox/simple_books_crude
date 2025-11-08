@@ -1,0 +1,9 @@
+services:
+  api:
+    build: ./server
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "localhost:3001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped

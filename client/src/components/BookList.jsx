@@ -5,12 +5,25 @@ export default function BookList({ books, onDelete }) {
 
   // Group books by author
   const booksByAuthor = useMemo(() => {
-    if (!books || !books.books || books.books.length === 0) {
+    if (!books || !books.books) {
+      return {};
+    }
+
+    let bookList = books.books;
+    if (typeof bookList === 'string') {
+      try {
+        bookList = JSON.parse(bookList);
+      } catch {
+        return {};
+      }
+    }
+
+    if (!Array.isArray(bookList) || bookList.length === 0) {
       return {};
     }
 
     const grouped = {};
-    books.books.forEach((book) => {
+    bookList.forEach((book) => {
       if (book && book.author) {
         if (!grouped[book.author]) {
           grouped[book.author] = [];

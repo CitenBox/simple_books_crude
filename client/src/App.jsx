@@ -5,12 +5,8 @@ import BookList from './components/BookList';
 import './App.css';
 
 // Build API URL from environment variables
-const API_PROTOCOL = import.meta.env.VITE_API_PROTOCOL || 'http';
-const API_HOST = import.meta.env.VITE_API_HOST || 'localhost';
-const API_PORT = import.meta.env.VITE_API_PORT || '3001';
-const API_BASE_PATH = import.meta.env.VITE_API_BASE_PATH || '/books';
-const portStr = API_PORT && API_PORT !== '80' && API_PORT !== '443' ? `:${API_PORT}` : '';
-const apiUrl = `${API_PROTOCOL}://${API_HOST}${portStr}${API_BASE_PATH}`;
+const API_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+const API_BOOK_URL = API_URL + '/books';
 
 // App configuration
 const APP_TITLE = import.meta.env.VITE_APP_TITLE || 'Book Manager';
@@ -20,7 +16,7 @@ export default function App() {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
-    fetch(apiUrl, {
+    fetch(API_BOOK_URL, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json'},
     })
@@ -30,27 +26,35 @@ export default function App() {
   }, []);
 
   const addBook = (book) => {
-    fetch(apiUrl, {
+    fetch(API_BOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(book),
     })
-      .then(() => fetch(apiUrl))
+      .then(() => fetch(API_BOOK_URL))
       .then(res => res.json())
       .then(setBooks)
       .catch(console.error);
   };
 
   const deleteBook = (id) => {
-    fetch(`${apiUrl}/${id}`, { method: 'DELETE' })
-      .then(() => fetch(apiUrl))
+    fetch(`${API_BOOK_URL}/${id}`, { method: 'DELETE' })
+      .then(() => fetch(API_BOOK_URL))
       .then(res => res.json())
       .then(setBooks)
       .catch(console.error);
   };
 
   // Calculate statistics
-  const bookList = books?.books || [];
+  // Handle case where backend returns books as a string instead of array
+  let bookList = books?.books || [];
+  if (typeof bookList === 'string') {
+    try {
+      bookList = JSON.parse(bookList);
+    } catch {
+      bookList = [];
+    }
+  }
   const totalBooks = bookList.length;
   const uniqueAuthors = new Set(bookList.map(book => book?.author).filter(Boolean)).size;
 

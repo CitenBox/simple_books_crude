@@ -13,6 +13,11 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
+      - name: Lowercase owner
+        shell: bash
+        run: echo "OWNER_LC=${OWNER@L}" >> "$GITHUB_ENV"
+        env:
+          OWNER: ${{ github.repository_owner }}
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set up Docker Buildx
@@ -27,7 +32,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./server
-          tags: ghcr.io/${{ github.repository_owner }}/bookscrude-api:sha-${{ github.sha }}
+          tags: ghcr.io/${{ env.OWNER_LC }}/bookscrude-api:sha-${{ github.sha }}
           push: true
           cache-from: type=gha
           cache-to: type=gha, mode=max
@@ -47,7 +52,7 @@ jobs:
         with:
           context: ./client
           file: ./client/Dockerfile.nginx
-          tags: ghcr.io/${{ github.repository_owner }}/bookscrude-web:sha-${{ github.sha }}
+          tags: ghcr.io/${{ env.OWNER_LC }}/bookscrude-web:sha-${{ github.sha }}
           push: true
           cache-from: type=gha
           cache-to: type=gha, mode=max

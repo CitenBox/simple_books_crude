@@ -34,6 +34,7 @@ jobs:
 
       - name: build and push API
         uses: docker/build-push-action@v6
+        id: build_api
         with:
           context: ./server
           tags: ghcr.io/${{ env.OWNER_LC }}/bookscrude-api:sha-${{ github.sha }}

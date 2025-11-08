@@ -3,7 +3,7 @@
 ![CI](https://github.com/citenbox/simple_books_crude/actions/workflows/ci.yml/badge.svg)
 
 Super simple book CRUD. React + Vite frontend, C++ (Crow) backend.
-Docker compositions for dev and prod. GitHub CI builds and pushes images.
+Docker compositions for development and production. GitHub CI builds and pushes images.
 
 ## Run it
 
@@ -34,6 +34,7 @@ cd client
 npm install
 npm run dev
 ```
+
 
 
 

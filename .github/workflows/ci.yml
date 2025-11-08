@@ -1,9 +1,8 @@
 name: ci
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -32,14 +31,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Trivy scan API
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: ghcr.io/${{ env.OWNER_LC }}/bookscrude-api:sha-${{ github.sha }}
-          vuln-type: 'os,library'
-          severity: 'HIGH,CRITICAL'
-          ignore-unfixed: true
-          exit-code: '1'
+
       - name: build and push API
         uses: docker/build-push-action@v6
         with:
@@ -48,6 +40,20 @@ jobs:
           push: true
           cache-from: type=gha
           cache-to: type=gha, mode=max
+
+      - name: Trivy scan API
+        uses: aquasecurity/trivy-action@0.28.0
+        env:
+          TRIVY_USERNAME: ${{ github.actor }}
+          TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          scan-type: image
+          image-ref: ghcr.io/${{ env.OWNER_LC }}/bookscrude-api:@${{ steps.build_api.outputs.digest }}
+          vuln-type: "os,library"
+          severity: "HIGH,CRITICAL"
+          ignore-unfixed: true
+          exit-code: "1"
+
   build_web:
     runs-on: ubuntu-latest
     steps:
@@ -56,6 +62,7 @@ jobs:
         run: echo "OWNER_LC=${OWNER@L}" >> "$GITHUB_ENV"
         env:
           OWNER: ${{ github.repository_owner }}
+
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
@@ -64,7 +71,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push web
-        id: build_api
+        id: build_web
         uses: docker/build-push-action@v6
         with:
           context: ./client
@@ -72,12 +79,12 @@ jobs:
           tags: ghcr.io/${{ env.OWNER_LC }}/bookscrude-web:sha-${{ github.sha }}
           push: true
           cache-from: type=gha
-          cache-to: type=gha, mode=max
+          cache-to: type=gha,mode=max
       - name: Docker metadata
         id: meta #meta irony
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ env.OWNER_LC }}/bookscrude-api
+          images: ghcr.io/${{ env.OWNER_LC }}/bookscrude-web
           tags: type=sha
           labels: |
             org.opencontainers.image.source=${{ github.repository }}

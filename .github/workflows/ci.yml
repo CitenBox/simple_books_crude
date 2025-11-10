@@ -1,28 +1,124 @@
 name: ci
 on:
   push:
-    branches: [master]
+    branches: [master, dev]
   pull_request:
+
+  workflow_dispatch:
+    inputs:
+      web_port:
+        description: "Host port for web"
+        default: "8080"
+        required: false
+      api_port:
+        description: "Host port for API"
+        default: "3001"
+        required: false
 
 permissions:
   contents: read
   packages: write
+
+
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-and-push:
+  test_ports:
+    runs-on: ubuntu-latest
+
+    outputs:
+      web_port: ${{ steps.export_ports.outputs.web_port }}
+      api_port: ${{ steps.export_ports.outputs.api_port }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Normalize inputs -> $GITHUB_ENV
+        shell: bash
+        run: |
+          WEB_PORT:="${{ inputs.web_port }}"
+          API_PORT:="${{ inputs.api_port }}"
+          : "${WEB_PORT:=8080}""
+          : "${API_PORT:=3001}"
+          echo "WEB_PORT=$WEB_PORT" >> "$GITHUB_ENV"
+          echo "API_PORT=$API_PORT" >> "$GITHUB_ENV"
+
+        #for other job access (if they want to be spoiled a lil)
+      - name: Export ports as outputs
+        id: export_ports
+        shell: bash
+        run: |
+          echo "web_port=${WEB_PORT}" >> "$GITHUB_OUTPUT"
+          echo "api_port=${API_PORT}" >> "$GITHUB_OUTPUT"
+
+      - name: Show resolved ports (debug)
+        run: |
+          echo "WEB_PORT=$WEB_PORT"
+          echo "API_PORT=$API_PORT"
+
+      - name: Compose override for ports
+        run: |
+          cat > compose.ports.override.yml <<'YAML'
+          services:
+            web:
+              ports:
+                - "${WEB_PORT}:80"
+            api:
+              ports:
+                - "${API_PORT}:3001"
+          YAML
+          echo "---- compose.ports.override.yml ----"
+          cat compose.ports.override.yml
+
+      - name: Show merged config (with override)
+        run: |
+          docker compose \
+            -f compose.base.yml \
+            -f compose.prod.yml \
+            -f compose.ports.override.yml \
+            config  
+
+      - name: Up and wait (with override)
+        run: |
+          docker compose \
+            -f compose.base.yml \
+            -f compose.prod.yml \
+            -f compose.ports.override.yml \
+            up -d --wait
+
+      - name: Smoke checks (both ports)
+        run: |
+          set -euxo pipefail
+          curl -sfI "http://localhost:${WEB_PORT}/" > /dev/null
+          curl -sfI "http://localhost:${WEB_PORT}/api/health" > /dev/null
+          curl -sfI "http://localhost:${API_PORT}/health" > /dev/null
+
+      - name: Down
+        if: always()
+        run: |
+          docker compose \
+            -f compose.base.yml \
+            -f compose.prod.yml \
+            -f compose.ports.override.yml \
+            down -v
+
+  build_api:
     runs-on: ubuntu-latest
     steps:
+
       - name: Lowercase owner
         shell: bash
         run: echo "OWNER_LC=${OWNER@L}" >> "$GITHUB_ENV"
         env:
           OWNER: ${{ github.repository_owner }}
+
       - name: Checkout code
         uses: actions/checkout@v4
+      - run: echo "Using ports -> web:$WEB_PORT api:$API_PORT"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -58,6 +154,7 @@ jobs:
   build_web:
     runs-on: ubuntu-latest
     steps:
+
       - name: Lowercase owner
         shell: bash
         run: echo "OWNER_LC=${OWNER@L}" >> "$GITHUB_ENV"
@@ -71,6 +168,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push web
         id: build_web
         uses: docker/build-push-action@v6
@@ -81,6 +179,7 @@ jobs:
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
       - name: Docker metadata
         id: meta #meta irony
         uses: docker/metadata-action@v5

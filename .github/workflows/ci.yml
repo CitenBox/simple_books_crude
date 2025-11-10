@@ -19,8 +19,6 @@ permissions:
   contents: read
   packages: write
 
-
-
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -41,7 +39,7 @@ jobs:
         run: |
           WEB_PORT:="${{ inputs.web_port }}"
           API_PORT:="${{ inputs.api_port }}"
-          : "${WEB_PORT:=8080}""
+          : "${WEB_PORT:=8080}"
           : "${API_PORT:=3001}"
           echo "WEB_PORT=$WEB_PORT" >> "$GITHUB_ENV"
           echo "API_PORT=$API_PORT" >> "$GITHUB_ENV"

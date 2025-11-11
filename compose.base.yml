@@ -1,6 +1,8 @@
 services:
   api:
     build: ./server
+    environment:
+      - PORT=3001
     healthcheck:
       test: ["CMD", "curl", "-fsS", "localhost:3001/health"]
       interval: 10s

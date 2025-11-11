@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: api-smoke
+  namespace: books
+spec:
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app: api-smoke
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: curl
+          image: curlimages/curl:8.10.1
+          args:
+            - -sSf
+            - --retry
+            - "5"
+            - --retry-delay
+            - "2"
+            - http://api.books.svc.cluster.local/health

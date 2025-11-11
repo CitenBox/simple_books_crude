@@ -1,8 +1,11 @@
 #include <crow.h>
 #include <crow/middlewares/cors.h>
 #include <fstream>
+#include <cstdlib>
+#include <sstream>
+#include <string>
 
-std::string booksJsonPath = BOOKS_DIR"books.json";
+std::string booksJsonPath = std::string(BOOKS_DIR) + "books.json"; // may be overridden by BOOKS_DIR env in main()
 
 int globalBookID = 0;
 
@@ -57,13 +60,35 @@ int main()
 {
   crow::App<crow::CORSHandler> app;
 
-  auto& cors = app.get_middleware<crow::CORSHandler>();
-  cors
-  .global()                            
-  .origin("*")                       
-  .methods(crow::HTTPMethod::GET, crow::HTTPMethod::POST, crow::HTTPMethod::Delete)
-  .headers("Content-Type");  
+  auto& corsHandler = app.get_middleware<crow::CORSHandler>();
+  auto& rule = corsHandler.global();
+  // Dynamic CORS origins via CORS_ALLOW_ORIGINS (comma separated) or fallback to *
+  if(const char* originsEnv = std::getenv("CORS_ALLOW_ORIGINS")) {
+    std::string originsStr = originsEnv;
+    if(originsStr == "*") {
+      rule.origin("*");
+    } else {
+      std::stringstream ss(originsStr);
+      std::string origin;
+      while(std::getline(ss, origin, ',')) {
+        origin.erase(0, origin.find_first_not_of(" \t"));
+        origin.erase(origin.find_last_not_of(" \t") + 1);
+        if(!origin.empty()) rule.origin(origin);
+      }
+    }
+  } else {
+    rule.origin("*");
+  }
+  rule.methods(crow::HTTPMethod::GET, crow::HTTPMethod::POST, crow::HTTPMethod::Delete)
+      .headers("Content-Type");
 
+  // Allow overriding books directory via BOOKS_DIR env (must end with /)
+  if(const char* booksDirEnv = std::getenv("BOOKS_DIR"))
+  {
+    std::string dir = booksDirEnv;
+    if(dir.size() && dir.back() != '/') dir.push_back('/');
+    booksJsonPath = dir + "books.json";
+  }
   idBooks();
 
   CROW_ROUTE(app, "/health")
@@ -142,5 +167,14 @@ int main()
     return crow::response(200, "Book removed successfully");
   });
 
-  app.port(3001).server_name("BooksApi").run();
+  const char* p = std::getenv("PORT");
+  int port = p ? std::stoi(p) : 3001;
+  const char* hostEnv = std::getenv("HOST");
+  std::string bindHost = hostEnv ? hostEnv : "0.0.0.0";
+
+  app.port(port)
+  .server_name("BooksAPI")
+  .bindaddr(bindHost)
+  .multithreaded()
+  .run();
 }

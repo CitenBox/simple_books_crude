@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  namespace: books
+data:
+  HOST: "0.0.0.0"
+  PORT: "3001"
+  # Database values kept for future use (API currently uses JSON file)
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  DB_NAME: "books"
+  DB_USER: "books"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+  namespace: books
+data:
+  POSTGRES_DB: "books"
+  POSTGRES_USER: "books"
